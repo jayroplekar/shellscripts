@@ -1,0 +1,57 @@
+#! /bin/csh
+
+# This script will extract the BoundingBox information from any image
+# file by first converting to EPS (but not saving) and then saving the
+# BoundingBox line in a file <file>.<image-extension>.bb.
+#echo " first file" $argv[1] "root" $argv[1]:r "ext" $argv[1]:e
+set froot = $argv[1]:r; set fext = $argv[1]:e;
+if ( $fext != gz)then
+ set first_num=$fext
+else
+ set first_num=$froot:e
+endif
+echo "starting file num" $first_num
+echo "creating ppm files"
+set timestamp="xx:xx.xxx"
+foreach f ($argv)
+	set ext = $f:e
+        if ($ext == gz)then
+#	 echo "looks like gzipped file"
+	 gunzip $f
+	 set opfile =  $f:r
+	else
+	 set opfile = $f
+	endif
+
+       if (-d $opfile) continue
+
+       set num = $opfile:e
+#	echo 'enter timestamp'
+#	read timestamp < ../select_time_steps
+	set timestamp = `sed -n ''$num','$num' p' ../select_time_steps`
+	echo 'stamp' $timestamp
+
+#sed 's/aa /'$timestamp'/' ~jay/jay_loc/shell_scripts/tmp.convert >myconvert
+ sed -e 's/aa /'$timestamp'/' \
+	-e 's/num/'$num'/' \
+	-e 's/opfile/'$opfile'/' \
+	~jay/jay_loc/shell_scripts/tmp.convert >myconvert
+
+        chmod +x myconvert
+	./myconvert
+
+#       convert3.6.5 $opfile ppm:newpict.$num
+#	convert -crop 721x580 $opfile ppm:pict.$num
+#convert -font -adobe-courier-bold-r-normal--17-120-100-100-m-100-iso8859-1 -dr#aw "text +60#0+550 t=00:00:10.359 " IMG.002 foo5.gif
+#       gzip -f $f
+
+end
+
+ sed  's/001-999/'$first_num'-'$num'/' ~jay/jay_loc/shell_scripts/flrs.param.template >flrs.param
+
+echo "encoding files"
+
+mpeg_encode flrs.param >& /dev/null
+
+#rm -f pict.*
+exit 0

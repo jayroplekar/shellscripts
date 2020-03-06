@@ -1,0 +1,29 @@
+# test file
+
+PATTERN         IBBPBBI
+OUTPUT          ./temp_movie.mpg
+
+BASE_FILE_FORMAT        PPM
+INPUT_CONVERT   	*
+GOP_SIZE        	6
+SLICES_PER_FRAME  	1
+
+INPUT_DIR .
+
+INPUT
+pict.*         [001-999]
+END_INPUT
+
+PIXEL           HALF
+RANGE           10
+
+PSEARCH_ALG     LOGARITHMIC
+BSEARCH_ALG     CROSS2
+
+IQSCALE         8
+PQSCALE         10
+BQSCALE         25
+
+REFERENCE_FRAME ORIGINAL
+FORCE_ENCODE_LAST_FRAME
+

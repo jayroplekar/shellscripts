@@ -1,0 +1,35 @@
+#!/bin/csh
+
+#This script checks whether a orbixd is running on each of the machines
+#listed below and sends it to 2 addresses 
+
+
+@ tomail=0
+
+#ypcat netgroup| sed 's/,,)//g'  | sed 's/(//g'| sed 's/, root,)//g'
+# generates following list dead names taken out
+
+foreach f (cat3406.ncsa.uiuc.edu   cat24h.ncsa.uiuc.edu\
+cat485.ncsa.uiuc.edu    cat994.ncsa.uiuc.edu    cat973.ncsa.uiuc.edu\
+    cat777.ncsa.uiuc.edu    temp1.ncsa.uiuc.edu\
+     temp3.ncsa.uiuc.edu       cat3196.ncsa.uiuc.edu   cat611.ncsa.uiuc.edu\
+     cat725.ncsa.uiuc.edu         cat992.ncsa.uiuc.edu\
+     cat5230.ncsa.uiuc.edu        cat545.ncsa.uiuc.edu  cat740.ncsa.uiuc.edu\
+     cat988.ncsa.uiuc.edu )
+
+
+#set tmp = `remsh $f  uname -i`
+
+set tmp = `remsh $f ls /user1/scratch/griswkj`
+
+if ( $#tmp == 0 )then
+  echo "no output for:" $f >> ~jay/node_ids
+  
+else
+  echo "node id  for:" $f  $tmp >> ~jay/node_ids
+endif
+
+end
+
+
+exit 0

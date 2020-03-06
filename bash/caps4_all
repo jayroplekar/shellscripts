@@ -1,0 +1,246 @@
+
+# Program: CaPS4.0 main script
+# Original Author: RJ Feller  06/19/02
+
+$CAPS_ROOT/bin/$MACHINE/header
+
+#
+#  Rename PC2UX directory (if necessary)
+#
+if (test -d CaPS_PC2UX)
+then
+   mv CaPS_PC2UX PC2UX
+fi
+
+#
+#  Check if in correct starting place
+#
+if (test ! -d PC2UX)
+then
+  if (test ! -f INPUT.RUN0)
+  then
+    echo
+    echo "NOT IN CORRECT STARTING DIRECTORY OR"
+    echo "PC2UX/ CANNOT BE FOUND IN WORKING DIRECTORY."
+    echo "CaPS4.0 CANNOT PROCEED!"
+    exit
+  fi
+fi
+       
+#
+# Reset variable x
+#
+   x="?"
+
+#
+# Read User's entry, and process accordingly
+#
+while (test "$x" = "?")
+do
+   echo
+   echo "  `pwd`"
+   echo "  ____________________________________________________"
+   echo " |                                                    |"
+   echo " | IMPORT/EXPORT OPTIONS                              |"
+   echo " |  1) PC2UX IMPORT                                   |"
+   echo " |  2) UX2PC EXPORT                                   |"
+   echo " |                                                    |"
+   echo " | SOLVER OPTIONS                                     |"
+   echo " |  3) XTERM SOLVER   (RUNS IN XTERM WINDOW)          |"
+   echo " |  4) BATCH SOLVER   (RUNS IN BATCH MODE)            |"
+   echo " |  5) DEFER SOLVER   (CREATES DEFER FILE)            |"
+   echo " |                                                    |"
+   echo " | POST PROCESSING                                    |"
+   echo " |  6) CaPSPOST                                       |"
+   echo " |  7) COND_TFS                                       |"
+   echo " |  8) COND_INFO                                      |"
+   echo " |  9) COND_INFO1                                     |"
+   echo " |____________________________________________________|"
+   echo "   Choose (EXIT) : \c                                  "
+   read x
+
+   echo
+
+   case $x in
+
+   # 
+   # IMPORT selected
+   #
+   1|i*|I*)
+      echo "IMPORT SELECTED: `date`."
+      $CAPS_ROOT/bin/$MACHINE/import
+      echo "IMPORT COMPLETED: `date`."
+      ;;
+
+   # 
+   # EXPORT selected
+   #
+   2|x*|X*)
+      echo "EXPORT SELECTED: `date`."
+      $CAPS_ROOT/bin/$MACHINE/export
+      echo "EXPORT COMPLETED: `date`."
+      ;;
+   
+   #
+   # RUN SOLVER is selected
+   #
+   3|r*|R*)
+      echo "XTERM SOLVER SELECTED: `date`."
+      if (test -f OUTPUT.RUN0)
+      then
+        rm -f OUTPUT.RUN0
+      fi
+      if (test -f OUTPUT.RUN1)
+      then
+        rm -f OUTPUT.RUN1
+      fi
+      if (test -f data/*.dat)
+      then
+        rm -f data/*.dat
+      fi
+      xterm -title "CaPS4.0 Solver" -e $CAPS_ROOT/bin/$MACHINE/solver &
+      echo "XTERM SOLVER EXECUTING: `date`."
+      ;;
+
+   #
+   # BATCH SOLVER is selected
+   #
+   4|b*|B*)
+      echo "BATCH SOLVER SELECTED: `date`."
+      if (test -f OUTPUT.RUN0)
+      then
+        rm -f OUTPUT.RUN0
+      fi
+      if (test -f OUTPUT.RUN1)
+      then
+        rm -f OUTPUT.RUN1
+      fi
+      if (test -f data/*.dat)
+      then
+        rm -f data/*.dat
+      fi
+      $CAPS_ROOT/bin/$MACHINE/CaPS40_BCIC_all
+      $CAPS_ROOT/bin/$MACHINE/CaPS40_SOLV_all &
+      echo "BATCH SOLVER EXECUTING: `date`."
+      ;;
+
+   #
+   # DEFER is selected
+   #
+   5|d*|D*)
+      echo "DEFER SOLVER SELECTED: `date`." 
+      echo "cd `pwd`" > DEFER
+      echo "$CAPS_ROOT/bin/$MACHINE/CaPS40_BCIC" >> DEFER
+      echo "$CAPS_ROOT/bin/$MACHINE/CaPS40_SOLV" >> DEFER
+      echo "echo \"PROJECT FOR `pwd` HAS BEEN COMPLETED\"" >> DEFER
+      chmod +x DEFER
+      echo "DEFER FILE CREATED IN WORKING DIRECTORY."
+      ;;
+
+   # CaPSPOST selected
+   #
+   6|p*|P*)
+      echo "CaPSPOST SELECTED: `date`."
+      #
+      # If data directory does not exist, do not proceed
+      #
+      if (test ! -d data)
+      then
+	echo
+	echo "data/ CANNOT BE FOUND."
+	echo "CaPS4.0 CANNOT PROCEED!"
+	exit
+      else
+        cd data
+        $CAPS_ROOT/bin/$MACHINE/post
+	cd ..
+        echo "CaPSPOST COMPLETED: `date`."
+      fi
+      ;;
+
+   #
+   # COND_TFS selected
+   #
+   7|t*|t*)
+      echo "COND_TFS SELECTED: `date`."
+      #
+      # Check if necessary files exist
+      #
+      if (test ! -f data/TFS.dat)
+      then
+        echo "data/TFS.dat CANNOT BE FOUND."
+	echo "CaPS4.0 CANNOT PROCEED!"
+	exit
+      fi
+
+      #
+      # Now start condensing
+      #
+      cd data
+      $CAPS_ROOT/bin/$MACHINE/cond_tfs
+      cd ..
+	
+      echo "COND_TFS COMPLETED: `date`."
+      ;;
+
+   #
+   # COND_INFO selected
+   #
+   8|c*|c*)
+      echo "COND_INFO SELECTED: `date`."
+      #
+      # Check if necessary files exist
+      #
+      if (test ! -f data/INFO.dat)
+      then
+        echo "data/INFO.dat CANNOT BE FOUND."
+	echo "CaPS4.0 CANNOT PROCEED!"
+	exit
+      fi
+
+      #
+      # Now start condensing
+      #
+      cd data
+      $CAPS_ROOT/bin/$MACHINE/cond_info
+      cd ..
+	
+      echo "COND_INFO COMPLETED: `date`."
+      ;;
+
+   #
+   # COND_INFO1 selected
+   #
+   9|j*|J*)
+      echo "COND_INFO1 SELECTED: `date`."
+      #
+      # Check if necessary files exist
+      #
+      if (test ! -f data/INFO1.dat)
+      then
+        echo "data/INFO1.dat CANNOT BE FOUND."
+	echo "CaPS4.0 CANNOT PROCEED!"
+	exit
+      fi
+
+      #
+      # Now start condensing
+      #
+      cd data
+      $CAPS_ROOT/bin/$MACHINE/cond_info1
+      cd ..
+	
+      echo "COND_INFO1 COMPLETED: `date`."
+      ;;
+
+   #
+   # EXIT is selected
+   #
+   e*|E*|"")
+      echo "EXIT CaPS4.0: `date`."
+      exit
+      ;;
+   esac
+
+   x="?"
+done

@@ -1,0 +1,30 @@
+###runs only with GAWK
+#Script to spit out data from bill bedfords data
+BEGIN { FS = " " }
+
+	{while(   (getline !=0) ){ 
+	    v1=$3
+	    getline 
+	    v2=$3
+	    getline 
+	    v3=$3
+	    getline 
+	    v4=$3
+	   printf "%f %f %f %f", v1,v2,v3,v4
+
+	    }
+	}
+
+	
+
+END  { printf "%02d:%06.3f \n",  int(time/60), time%60
+close("tmp_out")}
+
+function scale(N, temp)
+{
+
+while( (getline < "tmp_out") !=0){ if( $0 !~ /#/){print $1,$2/temp} }
+
+}
+
+

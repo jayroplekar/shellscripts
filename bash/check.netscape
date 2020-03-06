@@ -1,0 +1,32 @@
+#!/bin/csh
+
+#This script checks whether a orbixd is running on each of the machines
+#listed below and sends it to 2 addresses 
+
+date > ~jay/orbixdlog.check
+@ tomail=0
+
+foreach f (cat515 cat24h cat973 catd11r cat994 cat5130 cat325 cat725\
+cat777 temp1)
+
+
+#setenv tmp `remsh $f  ps -ef |grep orb`
+
+set tmp = `remsh $f  ps -ef |grep orb`
+
+
+if ( $#tmp == 0 )then
+  echo "**Orbix daemon not running on:" $f >> ~jay/orbixdlog.check
+  @ tomail=1
+endif
+
+end
+
+if ($tomail == 1)then
+#echo "sending mail"
+elm -s "Orbix daemon" roplejk@cat.com jay@ncsa.uiuc.edu < ~jay/orbixdlog.check
+#elm -s "Orbix daemon"  jay@ncsa.uiuc.edu <~jay/orbixdlog.check
+endif
+
+rm -f ~jay/orbixdlog.check
+exit 0

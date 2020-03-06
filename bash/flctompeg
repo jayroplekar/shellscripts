@@ -1,0 +1,25 @@
+#! /bin/csh
+
+# This script will extract the BoundingBox information from any image
+# file by first converting to EPS (but not saving) and then saving the
+# BoundingBox line in a file <file>.<image-extension>.bb.
+mkdir tmp_flicker
+set root = $argv:r
+cp $argv tmp_flicker/flc_movie
+cd tmp_flicker 
+echo 'creating ppm files from flc in:'; pwd
+unflick flc_movie pict >& /dev/null
+echo 'encoding mpeg in:'; pwd
+
+foreach num (`ls pict*`)
+convert -geometry 704x576 $num ppm:tmp.$num
+mv -f tmp.$num $num
+end 
+sed  's/001-999/001-'$num'/' ~jay/jay_loc/shell_scripts/flrs.param.template >flrs.param
+
+
+#mpeg_encode  flrs.param>& /dev/null
+echo ' '
+#mv temp_movie.mpg ../$root.mpg
+#cd .. 
+#rm -rf tmp_flicker

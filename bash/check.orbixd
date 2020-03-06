@@ -1,0 +1,54 @@
+#!/bin/csh
+
+#This script checks whether a orbixd is running on each of the machines
+#listed below and sends it to 2 addresses 
+
+date >> ~jay/orbixdlog.check
+@ tomail=0
+
+
+##check the apache server on cat5130
+set apachetmp = `remsh cat5130  ps -ef |grep httpd`
+if ( $#apachetmp == 0 )then
+  echo "**Restarting apache on: cat5130"  >> ~jay/orbixdlog.check
+  remsh cat5130 /home6/jay/jay_loc/apache_1.3.12/bin/apachectl start >>~jay/orbixdlog.check
+  @ tomail=1
+endif
+
+#omitting following host cat973 as a disk crashed
+foreach f (cat515 cat24h  catd11r cat994 cat5130 cat325 cat725\
+cat777 temp1)
+# temp3)
+
+
+#setenv tmp `remsh $f  ps -ef |grep orb`
+
+set tmp = `remsh $f  ps -ef |grep orb`
+
+set nettmp = `remsh $f /home6/jay/jay_loc/shell_scripts/myps`
+
+if ( $#tmp == 0 )then
+  echo "**Orbix daemon not running on:" $f >> ~jay/orbixdlog.check
+  @ tomail=1
+endif
+
+if ( $#nettmp != 0 )then
+  echo "**Runaway netscape on:" $f >> ~jay/orbixdlog.check
+  echo "****" $nettmp >> ~jay/orbixdlog.check
+  @ tomail=1
+endif
+
+end
+
+if ($tomail == 1)then
+#echo "sending mail"
+#elm -s "Orbix/netsc " roplejk@cat.com jay@ncsa.uiuc.edu
+#<~jay/orbixdlog.check
+#elm -s "Orbix/netsc "  jay@ncsa.uiuc.edu <~jay/orbixdlog.check
+# elm -s "Orbix daemon" jay@ncsa.uiuc.edu <~jay/orbixdlog.check
+
+#elm -s "Orbix daemon"  jay@ncsa.uiuc.edu <~jay/orbixdlog.check
+endif
+
+#rm -f ~jay/orbixdlog.check
+exit 0

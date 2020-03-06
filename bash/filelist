@@ -1,0 +1,22 @@
+#! /bin/csh
+
+# do a set of operations on a list of files
+# 
+# 
+
+foreach f ($argv)
+       if (-d $f) continue
+       set root = $f:r
+       set ext = $f:e
+
+       
+          
+	  #mv  $f  compare_noplate+2in_$f
+	  dvips $f
+          echo ''
+       
+
+
+end
+exit 1
+

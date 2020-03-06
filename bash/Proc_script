@@ -1,0 +1,22 @@
+#! /bin/csh
+
+#
+#
+#
+#
+
+@ i=1
+foreach f (libpng-1.0.6c-sd-10.20.depot \
+mpeg2-1.2-sd-10.20.depot freetype-1.3.1-sd-10.20.depot \
+tiff-3.5.4-sd-10.20.depot jbigkit-1.2-sd-10.20.depot \
+jpeg-6b-sd-10.20.depot  zlib-1.1.3-sd-10.20.depot \
+)
+
+	echo $f
+        mv $f $f.gz        
+        gunzip $f.gz
+end
+
+ 
+#rm -f pict.*
+exit 0

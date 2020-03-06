@@ -1,0 +1,20 @@
+#! /bin/csh
+
+#echo " first file" $argv[1] "root" $argv[1]:r "ext" $argv[1]:e
+
+#foreach f (olympian cat515 cat24h cat973 catd11r cat994 cat5130 cat325)
+foreach f ( cat515 cat24h cat973 catd11r cat994 cat5130 cat325 temp3 \
+cat725 temp1)
+echo "*******"
+echo "Processing host:" $f
+echo "Processing host:" $f >>~/scratch_check
+#echo "**nsswitch.conf"
+#remsh $f more /etc/nsswitch.conf
+#remsh $f ls -l /user1/scratch/*
+#remsh $f du -ks /user1/scratch/jay >>~/scratch_check
+remsh $f ps -ef |grep -i caps
+#echo "**resolv.conf"
+#remsh $f more /etc/resolv.conf
+end
+
+exit 0

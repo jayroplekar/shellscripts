@@ -1,0 +1,5 @@
+/apps/ideas/ms7/sec/Statdaemon -a
+gawk ' {if ( ($0 ~/TIMESTAMP/) || ($0 ~/FEM/) ){print $0}}; \
+{if ( ($0 ~/FEM/) && ($0 ~/OUT/) )count[OUT]++}; \
+{if ( ($0 ~/FEM/) && ($0 ~/IN/)  )count[IN]++}; {printf "OUT:%d IN:%d \n", count[OUT], count[IN] >"balance"} ' /apps/ideas/ms7/sec/logs/daemon.olympian >Ideas_license_dump
+

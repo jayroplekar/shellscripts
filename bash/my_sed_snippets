@@ -1,0 +1,34 @@
+#Jay R following stuff is collected used info with sed mainly with
+# HPUX10.20 bundled
+
+	# line to set the time stamp variable to a particular line from the
+	# file select_time_steps
+ 
+	set timestamp = `sed -n ''$i','$i' p' ../select_time_steps`
+
+	# for each time stamp create a new script to  which will write the 
+        # right timestamp and create the pnm file to be made into mpeg
+        # tmp.convert is below
+        #  #!/bin/csh
+	#	/opt/ImageMagick/bin/convert  -geometry 704x576 \
+	#	-font -adobe-courier-bold-r-normal--17-120-100-100-m-100-iso8859-1 \
+	#	-draw "text +600+450 t=aa  " opfile ppm:pict.num 
+
+	 sed -e 's/aa /'$timestamp'/' \
+	-e 's/num/'$num'/' \
+	-e 's/opfile/'$opfile'/' \
+	~jay/jay_loc/shell_scripts/tmp.convert >myconvert
+
+        chmod +x myconvert
+	./myconvert
+
+
+	#following line  to replace ,eleno with ,-eleno for use of msc nastran elist
+        # for fluid structure interaction, where the number should be negative if
+        # fluid-structure interface is opposite of the boundary.
+
+	sed -e :a -e 's/,\([1-9]\)/,-\1/g' wtlist4 > foo2
+
+
+
+	
