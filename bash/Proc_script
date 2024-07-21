@@ -17,6 +17,4 @@ jpeg-6b-sd-10.20.depot  zlib-1.1.3-sd-10.20.depot \
         gunzip $f.gz
 end
 
- 
-#rm -f pict.*
 exit 0
